@@ -1,3 +1,3 @@
-from crb_currency_api.api import CrbCurrencyAPI
+from crb_currency_api.crb_currency_api import CrbCurrencyAPI  #  импорт из crb_currency_api
 
-all = ["CrbCurrencyAPI"]
+__all__ = ["CrbCurrencyAPI"]

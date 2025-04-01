@@ -26,5 +26,10 @@ async def main():
         usd_to_gbp = await api.exchange("USD", "GBP", Decimal("100"))
         print(f"100 USD = {usd_to_gbp} GBP")
 
+    async with CrbCurrencyAPI() as api:
+        usd_to_rud = await api.exchange("USD", "RUB", Decimal("1"))
+        print(f"1 USD = {usd_to_rud} RUB")
+
+
 if __name__ == "__main__":
     asyncio.run(main())
