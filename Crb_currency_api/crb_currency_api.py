@@ -1,9 +1,10 @@
 from decimal import Decimal, getcontext
 from typing import Dict
-from Сrb_currency_api.baseApi import BaseApi
-from Сrb_currency_api.api_client import ApiClient
-from Сrb_currency_api.cache_manager import CacheManager
-from Сrb_currency_api.parsers import XmlParser
+from Crb_currency_api.baseApi import BaseApi
+from Crb_currency_api.api_client import ApiClient
+from Crb_currency_api.cache_manager import CacheManager
+from Crb_currency_api.parsers import XmlParser
+
 
 class CrbRequestCurrencyApi(BaseApi):
     """Клиент API для получения курсов валют от Центрального банка России.
@@ -62,7 +63,9 @@ class CrbRequestCurrencyApi(BaseApi):
         rub_rates = self.cache.get("rates")
 
         if self.base_currency not in rub_rates:
-            raise ValueError(f"Базовая валюта {self.base_currency} не найдена в данных ЦБ")
+            raise ValueError(
+                f"Базовая валюта {self.base_currency} не найдена в данных ЦБ"
+            )
 
         base_rate = rub_rates[self.base_currency]
         adjusted_rates = {code: rate / base_rate for code, rate in rub_rates.items()}
@@ -86,7 +89,9 @@ class CrbRequestCurrencyApi(BaseApi):
             raise ValueError(f"Валюта {currency_code} не найдена")
         return rates[currency_code]
 
-    async def exchange(self, from_currency: str, to_currency: str, amount: Decimal) -> Decimal:
+    async def exchange(
+        self, from_currency: str, to_currency: str, amount: Decimal
+    ) -> Decimal:
         """Конвертировать сумму из одной валюты в другую.
 
         Аргументы:
@@ -103,10 +108,14 @@ class CrbRequestCurrencyApi(BaseApi):
         getcontext().prec = 5
         rates = await self._get_all_rates()
         if from_currency not in rates or to_currency not in rates:
-            raise ValueError(f"Одна из валют ({from_currency}, {to_currency}) не найдена")
+            raise ValueError(
+                f"Одна из валют ({from_currency}, {to_currency}) не найдена"
+            )
         from_rate = rates[from_currency]
         to_rate = rates[to_currency]
-        return (from_rate / to_rate) * amount if from_currency != to_currency else amount
+        return (
+            (from_rate / to_rate) * amount if from_currency != to_currency else amount
+        )
 
     async def __aenter__(self):
         """Вход в асинхронный контекстный менеджер.

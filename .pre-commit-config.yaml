@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 25.1.0  # последняя на момент апреля 2025
+    hooks:
+      - id: black
+        language_version: python3.13
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.11.4
+    hooks:
+      - id: ruff
+        args: [--fix]  # автоматические правки, если можно
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.15.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - types-cachetools

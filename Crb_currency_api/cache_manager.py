@@ -1,5 +1,7 @@
 from cachetools import TTLCache
 from datetime import datetime, timedelta
+from typing import Any
+
 
 class CacheManager:
     """Менеджер кэша с динамическим TTL, учитывающим выходные дни.
@@ -17,7 +19,9 @@ class CacheManager:
         Аргументы:
             maxsize (int): Максимальное количество элементов в кэше (по умолчанию: 100).
         """
-        self.cache = TTLCache(maxsize=maxsize, ttl=self._calculate_ttl())
+        self.cache: TTLCache[str, Any] = TTLCache(
+            maxsize=maxsize, ttl=self._calculate_ttl()
+        )
 
     def _calculate_ttl(self) -> int:
         """Рассчитать TTL в секундах до следующего рабочего дня.
@@ -33,12 +37,18 @@ class CacheManager:
         weekday = now.weekday()  # 0 = понедельник, 6 = воскресенье
 
         if weekday < 4:  # Понедельник-четверг
-            next_update = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+            next_update = (now + timedelta(days=1)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
         elif weekday == 4:  # Пятница
-            next_update = (now + timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+            next_update = (now + timedelta(days=3)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
         else:  # Суббота или воскресенье
             days_to_monday = 7 - weekday if weekday == 6 else 1
-            next_update = (now + timedelta(days=days_to_monday)).replace(hour=0, minute=0, second=0, microsecond=0)
+            next_update = (now + timedelta(days=days_to_monday)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
 
         ttl = int((next_update - now).total_seconds())
         return max(ttl, 1)  # Минимальный TTL — 1 секунда

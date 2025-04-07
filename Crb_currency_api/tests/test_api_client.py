@@ -5,6 +5,7 @@ import pytest
 
 from Crb_currency_api.api_client import ApiClient
 
+
 @pytest.mark.asyncio
 async def test_api_client_successful_request():
     client = ApiClient()
@@ -20,6 +21,7 @@ async def test_api_client_successful_request():
     response = await client.get("http://test.url")
     assert response.status_code == 200
     assert response.text == "OK"
+
 
 @pytest.mark.asyncio
 async def test_api_client_retry_on_failure():
@@ -40,6 +42,7 @@ async def test_api_client_retry_on_failure():
     assert response.status_code == 200
     assert response.text == "OK"
     assert client.client.get.call_count == 2
+
 
 @pytest.mark.asyncio
 async def test_api_client_context_manager():

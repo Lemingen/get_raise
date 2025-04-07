@@ -1,6 +1,6 @@
 import asyncio
 from decimal import Decimal
-from Сrb_currency_api import CrbRequestCurrencyApi
+from Crb_currency_api import CrbRequestCurrencyApi
 
 
 async def main():
