@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from Сrb_currency_api.parsers import XmlParser
+from Crb_currency_api.parsers import XmlParser
 
 
 def test_cbr_xml_parser_success():

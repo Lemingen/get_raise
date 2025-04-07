@@ -28,7 +28,9 @@ class BaseApi(ABC):
         pass
 
     @abstractmethod
-    async def exchange(self, from_currency: str, to_currency: str, amount: Decimal) -> Decimal:
+    async def exchange(
+        self, from_currency: str, to_currency: str, amount: Decimal
+    ) -> Decimal:
         """Конвертировать сумму из одной валюты в другую относительно базовой валюты.
 
         Аргументы:

@@ -1,5 +1,6 @@
 import httpx
-from tenacity import retry, stop_after_attempt, retry_if_exception, wait_fixed
+from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception
+
 
 class ApiClient:
     """Асинхронный HTTP-клиент для выполнения запросов к API с повторными попытками.
@@ -22,7 +23,13 @@ class ApiClient:
         Аргументы:
             timeout (float): Таймаут запроса в секундах (по умолчанию: 10.0).
         """
+
         self.client = httpx.AsyncClient(timeout=timeout)
+        self.get = retry(
+            stop=stop_after_attempt(self.RETRIES),
+            wait=wait_fixed(2),
+            retry=retry_if_exception(self._should_retry),
+        )(self._get)
 
     def _should_retry(self, exc: BaseException) -> bool:
         """Определить, нужно ли повторить запрос на основе возникшего исключения.
@@ -33,16 +40,12 @@ class ApiClient:
         Возвращает:
             bool: True, если запрос нужно повторить, иначе False.
         """
-        if isinstance(exc, httpx.HTTPStatusError):
-            return exc.response.status_code in self.RETRY_STATUS_CODES
-        return False
+        return (
+            isinstance(exc, httpx.HTTPStatusError)
+            and exc.response.status_code in self.RETRY_STATUS_CODES
+        )
 
-    @retry(
-        stop=stop_after_attempt(RETRIES),
-        wait=wait_fixed(2),
-        retry=retry_if_exception(_should_retry)
-    )
-    async def get(self, url: str) -> httpx.Response:
+    async def _get(self, url: str) -> httpx.Response:
         """Выполнить асинхронный GET-запрос с повторными попытками.
 
         Аргументы:

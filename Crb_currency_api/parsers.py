@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import Dict
 from xml.etree import ElementTree
 
+
 class Parser(ABC):
     """Абстрактный базовый класс для парсинга ответов API.
 
@@ -42,12 +43,26 @@ class XmlParser(Parser):
             ValueError: Если парсинг курса завершился неудачей.
         """
         root = ElementTree.fromstring(response_text)
-        rates = {"RUB": Decimal("1.0")}
+        rates: Dict[str, Decimal] = {"RUB": Decimal("1.0")}
+
         for currency in root.findall("Valute"):
             try:
-                code = currency.find("CharCode").text
-                rate = currency.find("VunitRate").text.replace(",", ".")
-                rates[code] = Decimal(rate)
+                code_el = currency.find("CharCode")
+                rate_el = currency.find("VunitRate")
+
+                if code_el is None or rate_el is None:
+                    raise AttributeError("Missing CharCode or VunitRate element")
+
+                code_text = code_el.text
+                rate_text = rate_el.text
+
+                if code_text is None or rate_text is None:
+                    raise AttributeError("CharCode or VunitRate text is missing")
+
+                rate = rate_text.replace(",", ".")
+                rates[code_text] = Decimal(rate)
+
             except (AttributeError, ValueError) as e:
                 print(f"Ошибка парсинга валюты: {e}")
+
         return rates
